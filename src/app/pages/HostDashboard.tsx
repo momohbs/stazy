@@ -371,7 +371,7 @@ export function HostDashboard() {
                 Suis-je couvert en cas de problème ?
               </h3>
               <p className="text-gray-600">
-                Oui, ChargeShare propose une assurance complète couvrant les dommages
+                Oui, Stazy propose une assurance complète couvrant les dommages
                 matériels et la responsabilité civile pendant toute la durée de location.
               </p>
             </div>
