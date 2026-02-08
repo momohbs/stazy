@@ -29,6 +29,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const buildUserFromSession = (session: any): User | null => {
+    if (!session?.user?.id) return null;
+
+    const email = session.user.email || "";
+    const name =
+      session.user.user_metadata?.name ||
+      session.user.user_metadata?.full_name ||
+      "";
+
+    if (!email && !name) return null;
+
+    return {
+      id: session.user.id,
+      email,
+      name: name || email,
+    };
+  };
+
   useEffect(() => {
     // Check for existing session
     checkSession();
@@ -54,6 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.ok) {
           const profile = await response.json();
           setUser(profile);
+        } else {
+          const fallbackUser = buildUserFromSession(session);
+          if (fallbackUser) setUser(fallbackUser);
         }
       }
     } catch (error) {
@@ -115,6 +136,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.ok) {
           const profile = await response.json();
           setUser(profile);
+        } else {
+          const fallbackUser = buildUserFromSession(data.session);
+          if (fallbackUser) setUser(fallbackUser);
         }
       }
     } catch (error: any) {

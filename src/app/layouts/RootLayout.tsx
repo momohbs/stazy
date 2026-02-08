@@ -1,14 +1,22 @@
 import { Outlet, Link, useLocation } from "react-router";
-import { Zap, Map as MapIcon, Home, UserCircle, ShoppingCart, User, LogOut } from "lucide-react";
+import { Zap, Map as MapIcon, Home, UserCircle, ShoppingCart, LogOut } from "lucide-react";
 import { useAuth } from "@/app/contexts/AuthContext";
 import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu";
 import { Button } from "@/app/components/ui/button";
 import { toast } from "sonner";
 
 export function RootLayout() {
   const location = useLocation();
   const { user, signOut } = useAuth();
+
+  const getInitials = (name?: string, email?: string) => {
+    const source = (name || "").trim() || (email || "").split("@")[0] || "";
+    const parts = source.split(/\s+/).filter(Boolean);
+
+    if (parts.length === 0) return "?";
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -85,45 +93,22 @@ export function RootLayout() {
                     <ShoppingCart className="size-5" />
                   </Link>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="rounded-full p-0 w-10 h-10">
-                        <Avatar>
-                          <AvatarFallback className="bg-green-600 text-white">
-                            {user.name?.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>
-                        <div className="flex flex-col">
-                          <span className="font-semibold">{user.name}</span>
-                          <span className="text-xs text-gray-500 font-normal">
-                            {user.email}
-                          </span>
-                        </div>
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link to="/profile">
-                          <User className="size-4 mr-2" />
-                          Mon profil
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/cart">
-                          <ShoppingCart className="size-4 mr-2" />
-                          Mon panier
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleSignOut}>
-                        <LogOut className="size-4 mr-2" />
-                        Déconnexion
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="size-10">
+                        <AvatarFallback className="bg-green-600 text-white">
+                          {getInitials(user.name, user.email)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="hidden md:inline text-sm font-medium text-gray-700">
+                        {user.name || user.email}
+                      </span>
+                    </div>
+                    <Button variant="outline" onClick={handleSignOut}>
+                      <LogOut className="size-4 mr-2" />
+                      Déconnexion
+                    </Button>
+                  </div>
                 </>
               ) : (
                 <Link to="/auth">
@@ -180,6 +165,16 @@ export function RootLayout() {
               <p className="text-gray-400 text-sm">
                 ChargeShare connecte les propriétaires de bornes électriques avec les voyageurs
                 pour une mobilité électrique accessible à tous.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-4">Founder</h3>
+              <p className="text-gray-400 text-sm">
+                AMRANE Abdelghani Co-Founder & CEO
+              </p>
+              <p className="text-gray-400 text-sm">
+                HABSAOUI Morad Co-Founder & CTO
               </p>
             </div>
           </div>
